@@ -15,7 +15,7 @@
 
         <!-- Admin Cards -->
         <div class="row g-4">
-            <div class="col-md-6 col-lg-4">
+            <div class="col-md-6 col-lg-3">
                 <a th:href="@{/admin/usuarios}" class="text-decoration-none">
                     <div class="card h-100">
                         <div class="card-body text-center py-5">
@@ -27,7 +27,7 @@
                 </a>
             </div>
 
-            <div class="col-md-6 col-lg-4">
+            <div class="col-md-6 col-lg-3">
                 <a th:href="@{/admin/planos}" class="text-decoration-none">
                     <div class="card h-100">
                         <div class="card-body text-center py-5">
@@ -39,7 +39,22 @@
                 </a>
             </div>
 
-            <div class="col-md-6 col-lg-4">
+            <div class="col-md-6 col-lg-3">
+                <a th:href="@{/admin/configuracoes}" class="text-decoration-none">
+                    <div class="card h-100">
+                        <div class="card-body text-center py-5">
+                            <i class="bi bi-gear fs-1 text-warning mb-3 d-block"></i>
+                            <h5 class="mb-2">Configurações</h5>
+                            <p class="text-muted mb-0">
+                                Modo: <span class="badge" th:classappend="${usarMock} ? 'bg-primary' : 'bg-success'"
+                                            th:text="${usarMock} ? 'Mock' : 'API Real'">Mock</span>
+                            </p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-md-6 col-lg-3">
                 <a th:href="@{/dashboard}" class="text-decoration-none">
                     <div class="card h-100">
                         <div class="card-body text-center py-5">

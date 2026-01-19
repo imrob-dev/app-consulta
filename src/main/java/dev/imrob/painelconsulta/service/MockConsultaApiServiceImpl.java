@@ -1,7 +1,6 @@
 package dev.imrob.painelconsulta.service;
 
 import dev.imrob.painelconsulta.dto.response.ConsultaResponse;
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -10,8 +9,7 @@ import java.util.Map;
 import java.util.Random;
 
 @Service
-@Profile("mock")
-public class MockConsultaApiService implements ConsultaApiService {
+public class MockConsultaApiServiceImpl implements ConsultaApiService {
 
     private final Random random = new Random();
 

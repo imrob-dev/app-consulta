@@ -5,10 +5,7 @@ services:
     ports:
       - "8080:8080"
     environment:
-      SPRING_PROFILES_ACTIVE: mock
-      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/saasconsultas
-      SPRING_DATASOURCE_USERNAME: saas
-      SPRING_DATASOURCE_PASSWORD: saas123
+      SPRING_PROFILES_ACTIVE: prod
       JAVA_TOOL_OPTIONS: --enable-preview
     depends_on:
       db:

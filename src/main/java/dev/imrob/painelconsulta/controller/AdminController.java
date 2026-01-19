@@ -4,6 +4,7 @@ import dev.imrob.painelconsulta.dto.request.UserRegistrationRequest;
 import dev.imrob.painelconsulta.dto.request.UserUpdateRequest;
 import dev.imrob.painelconsulta.dto.response.UserResponse;
 import dev.imrob.painelconsulta.security.CustomUserDetails;
+import dev.imrob.painelconsulta.service.ConfiguracaoService;
 import dev.imrob.painelconsulta.service.PlanoService;
 import dev.imrob.painelconsulta.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -25,10 +26,12 @@ public class AdminController {
 
     private final UserService userService;
     private final PlanoService planoService;
+    private final ConfiguracaoService configuracaoService;
 
     @GetMapping
     public String adminDashboard(@AuthenticationPrincipal CustomUserDetails userDetails, Model model) {
         model.addAttribute("userName", userDetails.getNome());
+        model.addAttribute("usarMock", configuracaoService.isUsarMockConsultas());
         return "admin/index";
     }
 
@@ -192,5 +195,28 @@ public class AdminController {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
         }
         return "redirect:/admin/planos";
+    }
+
+    // ================== CONFIGURAÇÕES ==================
+
+    @GetMapping("/configuracoes")
+    public String configuracoes(@AuthenticationPrincipal CustomUserDetails userDetails, Model model) {
+        model.addAttribute("userName", userDetails.getNome());
+        model.addAttribute("usarMock", configuracaoService.isUsarMockConsultas());
+        model.addAttribute("configuracoes", configuracaoService.listarConfiguracoes());
+        return "admin/configuracoes";
+    }
+
+    @PostMapping("/configuracoes/modo-consulta")
+    public String alterarModoConsulta(@RequestParam(defaultValue = "false") boolean usarMock,
+                                      RedirectAttributes redirectAttributes) {
+        try {
+            configuracaoService.setUsarMockConsultas(usarMock);
+            String modo = usarMock ? "Mock (dados fictícios)" : "API Externa (dados reais)";
+            redirectAttributes.addFlashAttribute("success", "Modo de consulta alterado para: " + modo);
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+        }
+        return "redirect:/admin/configuracoes";
     }
 }

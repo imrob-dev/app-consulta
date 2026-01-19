@@ -197,6 +197,12 @@
                 <span class="text-white-50 small text-uppercase px-3">Administração</span>
             </li>
             <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+                <a class="nav-link" th:classappend="${#strings.equals(currentPage, 'admin')} ? 'active'" th:href="@{/admin}">
+                    <i class="bi bi-shield-lock"></i>
+                    <span>Painel Admin</span>
+                </a>
+            </li>
+            <li class="nav-item" sec:authorize="hasRole('ADMIN')">
                 <a class="nav-link" th:classappend="${#strings.equals(currentPage, 'admin-usuarios')} ? 'active'" th:href="@{/admin/usuarios}">
                     <i class="bi bi-people"></i>
                     <span>Usuários</span>
@@ -206,6 +212,12 @@
                 <a class="nav-link" th:classappend="${#strings.equals(currentPage, 'admin-planos')} ? 'active'" th:href="@{/admin/planos}">
                     <i class="bi bi-tags"></i>
                     <span>Planos</span>
+                </a>
+            </li>
+            <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+                <a class="nav-link" th:classappend="${#strings.equals(currentPage, 'admin-configuracoes')} ? 'active'" th:href="@{/admin/configuracoes}">
+                    <i class="bi bi-gear"></i>
+                    <span>Configurações</span>
                 </a>
             </li>
         </ul>

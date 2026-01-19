@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel de Consultas - Sua plataforma de pesquisas</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #4f46e5;
+            --primary-hover: #4338ca;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        .hero-section {
+            background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4f46e5 100%);
+            min-height: 100vh;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+
+        .navbar {
+            background: transparent !important;
+            padding: 1.5rem 0;
+        }
+
+        .navbar-brand {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: white !important;
+        }
+
+        .hero-content {
+            padding: 8rem 0;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-title {
+            font-size: 3.5rem;
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+        }
+
+        .hero-subtitle {
+            font-size: 1.25rem;
+            opacity: 0.9;
+            margin-bottom: 2rem;
+        }
+
+        .btn-hero {
+            padding: 1rem 2.5rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 0.5rem;
+            transition: all 0.3s;
+        }
+
+        .btn-hero-primary {
+            background: white;
+            color: var(--primary-color);
+            border: none;
+        }
+
+        .btn-hero-primary:hover {
+            background: #f1f5f9;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-hero-outline {
+            background: transparent;
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.5);
+        }
+
+        .btn-hero-outline:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: white;
+            color: white;
+        }
+
+        .pricing-section {
+            padding: 6rem 0;
+            background: #f8fafc;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .section-subtitle {
+            color: #64748b;
+            font-size: 1.1rem;
+            margin-bottom: 3rem;
+        }
+
+        .pricing-card {
+            background: white;
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .pricing-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .pricing-card.featured {
+            border: 2px solid var(--primary-color);
+            position: relative;
+        }
+
+        .pricing-card.featured::before {
+            content: 'Popular';
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--primary-color);
+            color: white;
+            padding: 0.25rem 1rem;
+            border-radius: 1rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
+        .pricing-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .pricing-price {
+            font-size: 3rem;
+            font-weight: 800;
+            color: var(--primary-color);
+        }
+
+        .pricing-price span {
+            font-size: 1rem;
+            font-weight: 400;
+            color: #64748b;
+        }
+
+        .pricing-features {
+            list-style: none;
+            padding: 0;
+            margin: 1.5rem 0;
+            flex-grow: 1;
+        }
+
+        .pricing-features li {
+            padding: 0.5rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .pricing-features li i {
+            color: #10b981;
+        }
+
+        .features-section {
+            padding: 6rem 0;
+            background: white;
+        }
+
+        .feature-icon {
+            width: 64px;
+            height: 64px;
+            border-radius: 1rem;
+            background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .feature-icon i {
+            font-size: 2rem;
+            color: white;
+        }
+
+        .feature-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+
+        .feature-text {
+            color: #64748b;
+        }
+
+        footer {
+            background: #1e1b4b;
+            color: white;
+            padding: 3rem 0;
+        }
+
+        footer a {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <!-- Hero Section -->
+    <section class="hero-section text-white">
+        <nav class="navbar navbar-expand-lg">
+            <div class="container">
+                <a class="navbar-brand" href="#">
+                    <i class="bi bi-search me-2"></i>Painel de Consultas
+                </a>
+                <div class="d-flex gap-2">
+                    <a href="/login" class="btn btn-hero btn-hero-outline">Entrar</a>
+                    <a href="/checkout" class="btn btn-hero btn-hero-primary">Começar Agora</a>
+                </div>
+            </div>
+        </nav>
+
+        <div class="container hero-content">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <h1 class="hero-title">Consultas rápidas e precisas em um só lugar</h1>
+                    <p class="hero-subtitle">
+                        Acesse informações de forma simples, segura e instantânea.
+                        Nossa plataforma oferece resultados confiáveis para suas pesquisas.
+                    </p>
+                    <div class="d-flex gap-3">
+                        <a href="/checkout" class="btn btn-hero btn-hero-primary">
+                            <i class="bi bi-rocket-takeoff me-2"></i>Comprar Acesso
+                        </a>
+                        <a href="#planos" class="btn btn-hero btn-hero-outline">
+                            <i class="bi bi-tags me-2"></i>Ver Planos
+                        </a>
+                    </div>
+                </div>
+                <div class="col-lg-6 d-none d-lg-block text-center">
+                    <img src="https://illustrations.popsy.co/violet/web-design.svg" alt="Ilustração" class="img-fluid" style="max-height: 400px;">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features-section">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h2 class="section-title">Por que escolher nossa plataforma?</h2>
+                <p class="section-subtitle">Recursos pensados para facilitar seu dia a dia</p>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="text-center">
+                        <div class="feature-icon mx-auto">
+                            <i class="bi bi-lightning-charge"></i>
+                        </div>
+                        <h3 class="feature-title">Resultados Instantâneos</h3>
+                        <p class="feature-text">Consultas processadas em segundos, com informações atualizadas em tempo real.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="text-center">
+                        <div class="feature-icon mx-auto">
+                            <i class="bi bi-shield-check"></i>
+                        </div>
+                        <h3 class="feature-title">Segurança Total</h3>
+                        <p class="feature-text">Dados criptografados e acesso protegido. Sua privacidade é nossa prioridade.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="text-center">
+                        <div class="feature-icon mx-auto">
+                            <i class="bi bi-graph-up-arrow"></i>
+                        </div>
+                        <h3 class="feature-title">Relatórios Detalhados</h3>
+                        <p class="feature-text">Histórico completo de consultas e dados organizados para análise.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section id="planos" class="pricing-section">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h2 class="section-title">Escolha seu plano</h2>
+                <p class="section-subtitle">Opções flexíveis para todas as necessidades</p>
+            </div>
+
+            <div class="row g-4 justify-content-center">
+                <div class="col-lg-4 col-md-6">
+                    <div class="pricing-card">
+                        <div class="text-center mb-4">
+                            <h3 class="pricing-name">Básico</h3>
+                            <p class="text-muted mb-3">Plano ideal para iniciantes. Inclui 100 consultas por mês.</p>
+                            <div class="pricing-price">
+                                R$ <span>49.90</span>
+                                <span>/mês</span>
+                            </div>
+                        </div>
+
+                        <ul class="pricing-features">
+                            <li>
+                                <i class="bi bi-check-circle-fill"></i>
+                                <span><strong>100</strong> consultas/mês</span>
+                            </li>
+                            <li>
+                                <i class="bi bi-check-circle-fill"></i>
+                                <span>Validade de <strong>30</strong> dias</span>
+                            </li>
+                            <li>
+                                <i class="bi bi-check-circle-fill"></i>
+                                <span>Suporte por email</span>
+                            </li>
+                            <li>
+                                <i class="bi bi-check-circle-fill"></i>
+                                <span>Histórico de consultas</span>
+                            </li>
+                            <li>
+                                <i class="bi bi-check-circle-fill"></i>
+                                <span>Acesso ao painel</span>
+                            </li>
+                        </ul>
+
+                        <a href="/checkout?planoId=1"
+                           class="btn btn-primary w-100 py-2 btn-outline-primary">
+                            Escolher Plano
+                        </a>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <div class="pricing-card featured">
+                        <div class="text-center mb-4">
+                            <h3 class="pricing-name">Profissional</h3>
+                            <p class="text-muted mb-3">Plano para profissionais. Inclui 500 consultas por mês.</p>
+                            <div class="pricing-price">
+                                R$ <span>149.90</span>
+                                <span>/mês</span>
+                            </div>
+                        </div>
+
+                        <ul class="pricing-features">
+                            <li>
+                                <i class="bi bi-check-circle-fill"></i>
+                                <span><strong>500</strong> consultas/mês</span>
+                            </li>
+                            <li>
+                                <i class="bi bi-check-circle-fill"></i>
+                                <span>Validade de <strong>30</strong> dias</span>
+                            </li>
+                            <li>
+                                <i class="bi bi-check-circle-fill"></i>
+                                <span>Suporte por email</span>
+                            </li>
+                            <li>
+                                <i class="bi bi-check-circle-fill"></i>
+                                <span>Histórico de consultas</span>
+                            </li>
+                            <li>
+                                <i class="bi bi-check-circle-fill"></i>
+                                <span>Acesso ao painel</span>
+                            </li>
+                        </ul>
+
+                        <a href="/checkout?planoId=2"
+                           class="btn btn-primary w-100 py-2">
+                            Escolher Plano
+                        </a>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <div class="pricing-card">
+                        <div class="text-center mb-4">
+                            <h3 class="pricing-name">Empresarial</h3>
+                            <p class="text-muted mb-3">Plano completo para empresas. Inclui 2000 consultas por mês.</p>
+                            <div class="pricing-price">
+                                R$ <span>399.90</span>
+                                <span>/mês</span>
+                            </div>
+                        </div>
+
+                        <ul class="pricing-features">
+                            <li>
+                                <i class="bi bi-check-circle-fill"></i>
+                                <span><strong>2000</strong> consultas/mês</span>
+                            </li>
+                            <li>
+                                <i class="bi bi-check-circle-fill"></i>
+                                <span>Validade de <strong>30</strong> dias</span>
+                            </li>
+                            <li>
+                                <i class="bi bi-check-circle-fill"></i>
+                                <span>Suporte por email</span>
+                            </li>
+                            <li>
+                                <i class="bi bi-check-circle-fill"></i>
+                                <span>Histórico de consultas</span>
+                            </li>
+                            <li>
+                                <i class="bi bi-check-circle-fill"></i>
+                                <span>Acesso ao painel</span>
+                            </li>
+                        </ul>
+
+                        <a href="/checkout?planoId=3"
+                           class="btn btn-primary w-100 py-2 btn-outline-primary">
+                            Escolher Plano
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 mb-4 mb-md-0">
+                    <h5 class="mb-3">
+                        <i class="bi bi-search me-2"></i>Painel de Consultas
+                    </h5>
+                    <p class="text-white-50">
+                        Sua plataforma de confiança para consultas rápidas e seguras.
+                    </p>
+                </div>
+                <div class="col-md-4 mb-4 mb-md-0">
+                    <h6 class="mb-3">Links Úteis</h6>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="#planos">Planos</a></li>
+                        <li class="mb-2"><a href="/login">Entrar</a></li>
+                        <li class="mb-2"><a href="/checkout">Cadastrar</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <h6 class="mb-3">Contato</h6>
+                    <ul class="list-unstyled text-white-50">
+                        <li class="mb-2"><i class="bi bi-envelope me-2"></i>contato@painelconsultas.com</li>
+                        <li class="mb-2"><i class="bi bi-whatsapp me-2"></i>(11) 99999-9999</li>
+                    </ul>
+                </div>
+            </div>
+            <hr class="my-4 border-secondary">
+            <div class="text-center text-white-50">
+                <small>&copy; 2024 Painel de Consultas. Todos os direitos reservados.</small>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

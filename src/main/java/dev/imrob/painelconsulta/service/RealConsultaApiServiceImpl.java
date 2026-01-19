@@ -1,7 +1,6 @@
 package dev.imrob.painelconsulta.service;
 
 import dev.imrob.painelconsulta.dto.response.ConsultaResponse;
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
@@ -9,12 +8,11 @@ import java.time.LocalDateTime;
 import java.util.Map;
 
 @Service
-@Profile("prod")
-public class RealConsultaApiService implements ConsultaApiService {
+public class RealConsultaApiServiceImpl implements ConsultaApiService {
 
     private final RestClient restClient;
 
-    public RealConsultaApiService(RestClient.Builder restClientBuilder) {
+    public RealConsultaApiServiceImpl(RestClient.Builder restClientBuilder) {
         this.restClient = restClientBuilder
                 .baseUrl("https://api.externa.com/v1") // URL da API externa real
                 .build();
