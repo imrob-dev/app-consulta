@@ -1,0 +1,46 @@
+services:
+  app:
+    build: .
+    container_name: painelconsulta-app
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: mock
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/saasconsultas
+      SPRING_DATASOURCE_USERNAME: saas
+      SPRING_DATASOURCE_PASSWORD: saas123
+      JAVA_TOOL_OPTIONS: --enable-preview
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - painelconsulta-network
+
+  db:
+    image: postgres:16-alpine
+    container_name: painelconsulta-db
+    environment:
+      POSTGRES_DB: saasconsultas
+      POSTGRES_USER: saas
+      POSTGRES_PASSWORD: saas123
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U saas -d saasconsultas"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - painelconsulta-network
+
+networks:
+  painelconsulta-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+

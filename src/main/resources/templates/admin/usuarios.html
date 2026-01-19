@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:replace="~{layout :: layout(~{:: #content}, ~{}, ~{:: #extraScripts})}">
+<head>
+    <title>Administração - Usuários</title>
+</head>
+<body>
+    <div id="content">
+        <!-- Page Title -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h4 class="mb-1">Gerenciar Usuários</h4>
+                <p class="text-muted mb-0">Administre os usuários do sistema</p>
+            </div>
+            <a th:href="@{/admin/usuarios/novo}" class="btn btn-primary">
+                <i class="bi bi-plus-circle me-2"></i>Novo Usuário
+            </a>
+        </div>
+
+        <!-- Filtros -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <form th:action="@{/admin/usuarios}" method="get" class="row g-3 align-items-end">
+                    <div class="col-md-6">
+                        <label class="form-label">Pesquisar</label>
+                        <input type="text" class="form-control" name="search" th:value="${search}"
+                               placeholder="Nome ou email...">
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-outline-primary">
+                            <i class="bi bi-search me-1"></i>Buscar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Tabela de Usuários -->
+        <div class="card">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="bg-light">
+                            <tr>
+                                <th class="px-4 py-3">ID</th>
+                                <th class="py-3">Nome</th>
+                                <th class="py-3">Email</th>
+                                <th class="py-3">Plano</th>
+                                <th class="py-3">Role</th>
+                                <th class="py-3">Status</th>
+                                <th class="py-3">Consultas</th>
+                                <th class="py-3 text-end px-4">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="usuario : ${usuarios.content}">
+                                <td class="px-4 py-3" th:text="${usuario.id}">#1</td>
+                                <td class="py-3" th:text="${usuario.nome}">Nome</td>
+                                <td class="py-3" th:text="${usuario.email}">email@exemplo.com</td>
+                                <td class="py-3">
+                                    <span th:text="${usuario.planoNome} ?: '-'">Profissional</span>
+                                </td>
+                                <td class="py-3">
+                                    <span class="badge bg-danger" th:if="${usuario.role == 'ROLE_ADMIN'}">Admin</span>
+                                    <span class="badge bg-secondary" th:if="${usuario.role == 'ROLE_USER'}">Usuário</span>
+                                </td>
+                                <td class="py-3">
+                                    <span class="badge bg-success" th:if="${usuario.status == 'ATIVO'}">Ativo</span>
+                                    <span class="badge bg-warning" th:if="${usuario.status == 'INATIVO'}">Inativo</span>
+                                </td>
+                                <td class="py-3">
+                                    <span th:text="${usuario.consultasUsadas} ?: 0">0</span> /
+                                    <span th:text="${usuario.limiteConsultas} ?: '-'">100</span>
+                                </td>
+                                <td class="py-3 text-end px-4">
+                                    <div class="btn-group">
+                                        <a th:href="@{/admin/usuarios/{id}(id=${usuario.id})}"
+                                           class="btn btn-sm btn-outline-primary">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle dropdown-toggle-split"
+                                                data-bs-toggle="dropdown">
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-menu-end">
+                                            <li th:if="${usuario.status == 'INATIVO'}">
+                                                <button type="button" class="dropdown-item text-success"
+                                                        th:onclick="'ativarUsuario(' + ${usuario.id} + ')'">
+                                                    <i class="bi bi-check-circle me-2"></i>Ativar
+                                                </button>
+                                            </li>
+                                            <li th:if="${usuario.status == 'ATIVO'}">
+                                                <form th:action="@{/admin/usuarios/{id}/desativar(id=${usuario.id})}" method="post" class="d-inline">
+                                                    <button type="submit" class="dropdown-item text-danger">
+                                                        <i class="bi bi-x-circle me-2"></i>Desativar
+                                                    </button>
+                                                </form>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr th:if="${usuarios.content.isEmpty()}">
+                                <td colspan="8" class="text-center py-5 text-muted">
+                                    <i class="bi bi-people fs-1 d-block mb-2"></i>
+                                    Nenhum usuário encontrado
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Paginação -->
+            <div class="card-footer bg-white" th:if="${usuarios.totalPages > 1}">
+                <nav aria-label="Navegação de páginas">
+                    <ul class="pagination justify-content-center mb-0">
+                        <li class="page-item" th:classappend="${usuarios.first} ? 'disabled'">
+                            <a class="page-link" th:href="@{/admin/usuarios(page=${usuarios.number - 1}, search=${search})}">
+                                <i class="bi bi-chevron-left"></i>
+                            </a>
+                        </li>
+
+                        <li class="page-item" th:each="i : ${#numbers.sequence(0, usuarios.totalPages - 1)}"
+                            th:classappend="${i == usuarios.number} ? 'active'">
+                            <a class="page-link" th:href="@{/admin/usuarios(page=${i}, search=${search})}"
+                               th:text="${i + 1}">1</a>
+                        </li>
+
+                        <li class="page-item" th:classappend="${usuarios.last} ? 'disabled'">
+                            <a class="page-link" th:href="@{/admin/usuarios(page=${usuarios.number + 1}, search=${search})}">
+                                <i class="bi bi-chevron-right"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+
+        <!-- Modal Ativar Usuário -->
+        <div class="modal fade" id="ativarModal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <form id="ativarForm" method="post">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Ativar Usuário</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label class="form-label">Selecione o Plano</label>
+                                <select class="form-select" name="planoId" required>
+                                    <option value="">Escolha um plano...</option>
+                                    <option th:each="plano : ${planos}" th:value="${plano.id}"
+                                            th:text="${plano.nome} + ' - R$ ' + ${#numbers.formatDecimal(plano.preco, 1, 2)}">Plano</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="submit" class="btn btn-success">Ativar Usuário</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="extraScripts">
+        <script>
+            function ativarUsuario(id) {
+                const form = document.getElementById('ativarForm');
+                form.action = `/admin/usuarios/${id}/ativar`;
+                new bootstrap.Modal(document.getElementById('ativarModal')).show();
+            }
+        </script>
+    </div>
+</body>
+</html>

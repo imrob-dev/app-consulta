@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:replace="~{layout :: layout(~{:: #content}, ~{}, ~{})}">
+<head>
+    <title>Resultado da Consulta</title>
+</head>
+<body>
+    <div id="content">
+        <!-- Page Title -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h4 class="mb-1">Resultado da Consulta</h4>
+                <p class="text-muted mb-0">
+                    <span th:text="${resultado.tipo}">CPF</span>:
+                    <strong th:text="${resultado.valorConsultado}">12345678900</strong>
+                </p>
+            </div>
+            <div>
+                <a th:href="@{/dashboard/nova-consulta}" class="btn btn-outline-primary me-2">
+                    <i class="bi bi-plus-circle me-1"></i>Nova Consulta
+                </a>
+                <a th:href="@{/dashboard/historico}" class="btn btn-outline-secondary">
+                    <i class="bi bi-clock-history me-1"></i>Histórico
+                </a>
+            </div>
+        </div>
+
+        <!-- Status Badge -->
+        <div class="mb-4">
+            <span class="badge bg-success fs-6" th:if="${resultado.status == 'SUCESSO'}">
+                <i class="bi bi-check-circle me-1"></i>Consulta realizada com sucesso
+            </span>
+            <span class="badge bg-danger fs-6" th:if="${resultado.status == 'ERRO'}">
+                <i class="bi bi-x-circle me-1"></i>Erro na consulta
+            </span>
+            <small class="text-muted ms-2">
+                Realizada em: <span th:text="${#temporals.format(resultado.timestamp, 'dd/MM/yyyy HH:mm:ss')}">01/01/2024 12:00:00</span>
+            </small>
+        </div>
+
+        <!-- Resultado -->
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span><i class="bi bi-file-text me-2"></i>Dados da Consulta</span>
+                <button class="btn btn-sm btn-outline-secondary" onclick="window.print()">
+                    <i class="bi bi-printer me-1"></i>Imprimir
+                </button>
+            </div>
+            <div class="card-body">
+                <div th:if="${resultado.dados}" th:with="dados=${resultado.dados}">
+                    <!-- Renderização dinâmica dos dados -->
+                    <div class="row" th:each="entry : ${dados}">
+                        <div class="col-12 mb-3" th:if="${entry.value != null}">
+                            <!-- Se for um objeto/mapa -->
+                            <div th:if="${entry.value instanceof T(java.util.Map)}" class="card bg-light">
+                                <div class="card-header bg-transparent">
+                                    <strong th:text="${#strings.capitalize(entry.key)}">Campo</strong>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row" th:each="subEntry : ${entry.value}">
+                                        <div class="col-md-6 mb-2">
+                                            <small class="text-muted text-uppercase" th:text="${subEntry.key}">SubCampo</small>
+                                            <p class="mb-0 fw-semibold" th:text="${subEntry.value}">Valor</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Se for uma lista -->
+                            <div th:if="${entry.value instanceof T(java.util.List)}" class="card bg-light">
+                                <div class="card-header bg-transparent">
+                                    <strong th:text="${#strings.capitalize(entry.key)}">Campo</strong>
+                                </div>
+                                <div class="card-body">
+                                    <ul class="list-unstyled mb-0" th:if="${!entry.value.isEmpty()}">
+                                        <li th:each="item : ${entry.value}">
+                                            <div th:if="${item instanceof T(java.util.Map)}" class="border-bottom pb-2 mb-2">
+                                                <div class="row">
+                                                    <div class="col-md-6 mb-1" th:each="subItem : ${item}">
+                                                        <small class="text-muted" th:text="${subItem.key}">Key</small>:
+                                                        <span th:text="${subItem.value}">Value</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <span th:unless="${item instanceof T(java.util.Map)}" th:text="${item}">Item</span>
+                                        </li>
+                                    </ul>
+                                    <span th:if="${entry.value.isEmpty()}" class="text-muted">Nenhum registro encontrado</span>
+                                </div>
+                            </div>
+
+                            <!-- Se for um valor simples -->
+                            <div th:unless="${entry.value instanceof T(java.util.Map) or entry.value instanceof T(java.util.List)}" class="row">
+                                <div class="col-md-4">
+                                    <small class="text-muted text-uppercase" th:text="${entry.key}">Campo</small>
+                                    <p class="mb-0 fw-semibold fs-5" th:text="${entry.value}">Valor</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div th:unless="${resultado.dados}" class="text-center text-muted py-5">
+                    <i class="bi bi-inbox fs-1"></i>
+                    <p class="mt-2">Nenhum dado retornado</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- JSON Raw (expandível) -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <a class="text-decoration-none" data-bs-toggle="collapse" href="#jsonRaw">
+                    <i class="bi bi-code-slash me-2"></i>Ver dados brutos (JSON)
+                    <i class="bi bi-chevron-down float-end"></i>
+                </a>
+            </div>
+            <div class="collapse" id="jsonRaw">
+                <div class="card-body">
+                    <pre class="bg-dark text-light p-3 rounded" style="max-height: 400px; overflow-y: auto;"><code th:text="${#strings.toString(resultado.dados)}">{ }</code></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

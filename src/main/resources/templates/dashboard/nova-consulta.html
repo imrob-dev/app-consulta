@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:replace="~{layout :: layout(~{:: #content}, ~{}, ~{:: #extraScripts})}">
+<head>
+    <title>Nova Consulta</title>
+</head>
+<body>
+    <div id="content">
+        <!-- Page Title -->
+        <div class="mb-4">
+            <h4 class="mb-1">Nova Consulta</h4>
+            <p class="text-muted mb-0">Selecione o tipo de consulta e informe o valor</p>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="card">
+                    <div class="card-body">
+                        <form th:action="@{/dashboard/consulta}" method="post" id="consultaForm">
+                            <div class="mb-4">
+                                <label class="form-label fw-semibold">Tipo de Consulta</label>
+                                <div class="row g-3">
+                                    <div class="col-md-4">
+                                        <input type="radio" class="btn-check" name="tipo" id="tipoCpf" value="CPF" checked>
+                                        <label class="btn btn-outline-primary w-100 py-3" for="tipoCpf">
+                                            <i class="bi bi-person-badge d-block fs-2 mb-2"></i>
+                                            CPF
+                                        </label>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <input type="radio" class="btn-check" name="tipo" id="tipoCnpj" value="CNPJ">
+                                        <label class="btn btn-outline-primary w-100 py-3" for="tipoCnpj">
+                                            <i class="bi bi-building d-block fs-2 mb-2"></i>
+                                            CNPJ
+                                        </label>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <input type="radio" class="btn-check" name="tipo" id="tipoPlaca" value="PLACA">
+                                        <label class="btn btn-outline-primary w-100 py-3" for="tipoPlaca">
+                                            <i class="bi bi-car-front d-block fs-2 mb-2"></i>
+                                            Placa
+                                        </label>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <input type="radio" class="btn-check" name="tipo" id="tipoTelefone" value="TELEFONE">
+                                        <label class="btn btn-outline-primary w-100 py-3" for="tipoTelefone">
+                                            <i class="bi bi-telephone d-block fs-2 mb-2"></i>
+                                            Telefone
+                                        </label>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <input type="radio" class="btn-check" name="tipo" id="tipoEmail" value="EMAIL">
+                                        <label class="btn btn-outline-primary w-100 py-3" for="tipoEmail">
+                                            <i class="bi bi-envelope d-block fs-2 mb-2"></i>
+                                            Email
+                                        </label>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <input type="radio" class="btn-check" name="tipo" id="tipoNome" value="NOME">
+                                        <label class="btn btn-outline-primary w-100 py-3" for="tipoNome">
+                                            <i class="bi bi-person-lines-fill d-block fs-2 mb-2"></i>
+                                            Nome
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="form-label fw-semibold" for="valor">Valor da Consulta</label>
+                                <input type="text" class="form-control form-control-lg" id="valor" name="valor"
+                                       placeholder="Digite o valor para consulta" required>
+                                <small class="text-muted" id="valorHelp">Ex: 12345678900</small>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary btn-lg px-5">
+                                <i class="bi bi-search me-2"></i>Consultar
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="card">
+                    <div class="card-header">
+                        <i class="bi bi-info-circle me-2"></i>Dicas
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3" id="dicaCpf">
+                            <h6>Consulta por CPF</h6>
+                            <p class="small text-muted mb-0">
+                                Digite apenas os números do CPF, sem pontos ou traços.
+                                <br><strong>Exemplo:</strong> 14043672764
+                            </p>
+                        </div>
+                        <div class="mb-3 d-none" id="dicaCnpj">
+                            <h6>Consulta por CNPJ</h6>
+                            <p class="small text-muted mb-0">
+                                Digite apenas os números do CNPJ.
+                                <br><strong>Exemplo:</strong> 31499929000130
+                            </p>
+                        </div>
+                        <div class="mb-3 d-none" id="dicaPlaca">
+                            <h6>Consulta por Placa</h6>
+                            <p class="small text-muted mb-0">
+                                Digite a placa no formato antigo ou Mercosul.
+                                <br><strong>Exemplo:</strong> NCF5440 ou ABC1D23
+                            </p>
+                        </div>
+                        <div class="mb-3 d-none" id="dicaTelefone">
+                            <h6>Consulta por Telefone</h6>
+                            <p class="small text-muted mb-0">
+                                Digite o DDD + número do telefone.
+                                <br><strong>Exemplo:</strong> 11999999999
+                            </p>
+                        </div>
+                        <div class="mb-3 d-none" id="dicaEmail">
+                            <h6>Consulta por Email</h6>
+                            <p class="small text-muted mb-0">
+                                Digite o email completo.
+                                <br><strong>Exemplo:</strong> usuario@email.com
+                            </p>
+                        </div>
+                        <div class="mb-3 d-none" id="dicaNome">
+                            <h6>Consulta por Nome</h6>
+                            <p class="small text-muted mb-0">
+                                Digite o nome completo ou parcial.
+                                <br><strong>Exemplo:</strong> João Silva
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="extraScripts">
+        <script>
+            const tipoInputs = document.querySelectorAll('input[name="tipo"]');
+            const valorInput = document.getElementById('valor');
+            const valorHelp = document.getElementById('valorHelp');
+
+            const placeholders = {
+                'CPF': 'Digite o CPF (apenas números)',
+                'CNPJ': 'Digite o CNPJ (apenas números)',
+                'PLACA': 'Digite a placa do veículo',
+                'TELEFONE': 'Digite o DDD + telefone',
+                'EMAIL': 'Digite o email completo',
+                'NOME': 'Digite o nome para pesquisa'
+            };
+
+            const helps = {
+                'CPF': 'Ex: 14043672764',
+                'CNPJ': 'Ex: 31499929000130',
+                'PLACA': 'Ex: NCF5440',
+                'TELEFONE': 'Ex: 11999999999',
+                'EMAIL': 'Ex: usuario@email.com',
+                'NOME': 'Ex: João Silva'
+            };
+
+            tipoInputs.forEach(input => {
+                input.addEventListener('change', function() {
+                    valorInput.placeholder = placeholders[this.value];
+                    valorHelp.textContent = helps[this.value];
+                    valorInput.value = '';
+
+                    // Mostrar dica correspondente
+                    document.querySelectorAll('[id^="dica"]').forEach(el => el.classList.add('d-none'));
+                    document.getElementById('dica' + this.value.charAt(0) + this.value.slice(1).toLowerCase()).classList.remove('d-none');
+                });
+            });
+        </script>
+    </div>
+</body>
+</html>

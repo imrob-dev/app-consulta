@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:replace="~{layout :: layout(~{:: #content}, ~{}, ~{})}">
+<head>
+    <title>Administração - Planos</title>
+</head>
+<body>
+    <div id="content">
+        <!-- Page Title -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h4 class="mb-1">Gerenciar Planos</h4>
+                <p class="text-muted mb-0">Configure os planos disponíveis para os usuários</p>
+            </div>
+            <a th:href="@{/admin/planos/novo}" class="btn btn-primary">
+                <i class="bi bi-plus-circle me-2"></i>Novo Plano
+            </a>
+        </div>
+
+        <!-- Lista de Planos -->
+        <div class="row g-4">
+            <div class="col-md-6 col-lg-4" th:each="plano : ${planos}">
+                <div class="card h-100">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <span class="fw-semibold" th:text="${plano.nome}">Plano</span>
+                        <span class="badge" th:classappend="${plano.active} ? 'bg-success' : 'bg-secondary'"
+                              th:text="${plano.active} ? 'Ativo' : 'Inativo'">Status</span>
+                    </div>
+                    <div class="card-body">
+                        <p class="text-muted" th:text="${plano.descricao}">Descrição do plano</p>
+
+                        <div class="mb-3">
+                            <span class="fs-3 fw-bold text-primary">
+                                R$ <span th:text="${#numbers.formatDecimal(plano.preco, 1, 2)}">0,00</span>
+                            </span>
+                            <span class="text-muted">/mês</span>
+                        </div>
+
+                        <ul class="list-unstyled">
+                            <li class="mb-2">
+                                <i class="bi bi-check-circle text-success me-2"></i>
+                                <span th:text="${plano.limiteConsultas}">100</span> consultas
+                            </li>
+                            <li class="mb-2">
+                                <i class="bi bi-check-circle text-success me-2"></i>
+                                Validade de <span th:text="${plano.validadeDias}">30</span> dias
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="card-footer bg-white">
+                        <div class="btn-group w-100">
+                            <a th:href="@{/admin/planos/{id}(id=${plano.id})}" class="btn btn-outline-primary">
+                                <i class="bi bi-pencil me-1"></i>Editar
+                            </a>
+                            <form th:action="@{/admin/planos/{id}/desativar(id=${plano.id})}" method="post"
+                                  th:if="${plano.active}" class="d-inline">
+                                <button type="submit" class="btn btn-outline-danger">
+                                    <i class="bi bi-x-circle me-1"></i>Desativar
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12" th:if="${#lists.isEmpty(planos)}">
+                <div class="card">
+                    <div class="card-body text-center py-5 text-muted">
+                        <i class="bi bi-tags fs-1 d-block mb-2"></i>
+                        Nenhum plano cadastrado
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

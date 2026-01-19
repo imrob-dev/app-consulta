@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - Painel de Consultas</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        body {
+            background: #f8fafc;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            min-height: 100vh;
+        }
+
+        .checkout-header {
+            background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
+            color: white;
+            padding: 2rem 0;
+        }
+
+        .checkout-card {
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            padding: 2rem;
+        }
+
+        .plan-card {
+            border: 2px solid #e2e8f0;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .plan-card:hover {
+            border-color: #4f46e5;
+        }
+
+        .plan-card.selected {
+            border-color: #4f46e5;
+            background: #f5f3ff;
+        }
+
+        .plan-card .plan-price {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #4f46e5;
+        }
+
+        .btn-checkout {
+            background: #4f46e5;
+            border: none;
+            padding: 1rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .btn-checkout:hover {
+            background: #4338ca;
+        }
+
+        .form-control:focus {
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="checkout-header">
+        <div class="container">
+            <a href="/" class="text-white text-decoration-none">
+                <i class="bi bi-arrow-left me-2"></i>Voltar
+            </a>
+            <h1 class="h3 mt-3 mb-0">
+                <i class="bi bi-cart-check me-2"></i>Finalizar Compra
+            </h1>
+        </div>
+    </header>
+
+    <div class="container py-5">
+        <div class="row g-4">
+            <!-- Formulário -->
+            <div class="col-lg-7">
+                <div class="checkout-card">
+                    <h4 class="mb-4">Seus Dados</h4>
+
+                    <form th:action="@{/checkout/iniciar}" method="post">
+                        <div class="mb-3">
+                            <label class="form-label" for="nome">Nome Completo</label>
+                            <input type="text" class="form-control" id="nome" name="nome" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label" for="email">Email</label>
+                            <input type="email" class="form-control" id="email" name="email" required>
+                            <small class="text-muted">Você usará este email para acessar o sistema</small>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label" for="telefone">Telefone</label>
+                            <input type="tel" class="form-control" id="telefone" name="telefone"
+                                   placeholder="(11) 99999-9999" required>
+                        </div>
+
+                        <h4 class="mb-3">Escolha seu Plano</h4>
+
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-4" th:each="plano, iterStat : ${planos}">
+                                <div class="plan-card" th:classappend="${planoSelecionado != null && planoSelecionado.id == plano.id} ? 'selected'"
+                                     th:onclick="'selectPlan(' + ${plano.id} + ')'">
+                                    <input type="radio" name="planoId" th:id="'plano' + ${plano.id}"
+                                           th:value="${plano.id}" class="d-none"
+                                           th:checked="${planoSelecionado != null && planoSelecionado.id == plano.id}">
+                                    <h6 class="mb-2" th:text="${plano.nome}">Plano</h6>
+                                    <div class="plan-price">
+                                        R$ <span th:text="${#numbers.formatDecimal(plano.preco, 1, 2)}">0,00</span>
+                                    </div>
+                                    <small class="text-muted" th:text="${plano.limiteConsultas} + ' consultas'">100 consultas</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-checkout btn-primary w-100">
+                            <i class="bi bi-lock me-2"></i>Gerar Pagamento PIX
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Resumo -->
+            <div class="col-lg-5">
+                <div class="checkout-card">
+                    <h4 class="mb-4">Resumo do Pedido</h4>
+
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Plano selecionado:</span>
+                        <strong id="resumoPlano" th:text="${planoSelecionado?.nome} ?: 'Selecione um plano'">-</strong>
+                    </div>
+
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Consultas:</span>
+                        <span id="resumoConsultas" th:text="${planoSelecionado?.limiteConsultas} ?: '-'">-</span>
+                    </div>
+
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Validade:</span>
+                        <span id="resumoValidade" th:text="${planoSelecionado != null} ? ${planoSelecionado.validadeDias} + ' dias' : '-'">-</span>
+                    </div>
+
+                    <hr>
+
+                    <div class="d-flex justify-content-between">
+                        <strong>Total:</strong>
+                        <strong class="text-primary fs-4" id="resumoTotal"
+                                th:text="${planoSelecionado != null} ? 'R$ ' + ${#numbers.formatDecimal(planoSelecionado.preco, 1, 2)} : 'R$ 0,00'">R$ 0,00</strong>
+                    </div>
+
+                    <div class="mt-4 p-3 bg-light rounded">
+                        <h6><i class="bi bi-shield-check text-success me-2"></i>Pagamento Seguro</h6>
+                        <small class="text-muted">
+                            Ao clicar em "Gerar Pagamento PIX", você será redirecionado para a página de pagamento
+                            onde poderá escanear o QR Code ou copiar o código PIX.
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script th:inline="javascript">
+        const planos = /*[[${planos}]]*/ [];
+
+        function selectPlan(planoId) {
+            // Remover seleção anterior
+            document.querySelectorAll('.plan-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+
+            // Selecionar novo plano
+            const plano = planos.find(p => p.id === planoId);
+            const card = document.querySelector(`input[value="${planoId}"]`).closest('.plan-card');
+            card.classList.add('selected');
+            document.querySelector(`input[value="${planoId}"]`).checked = true;
+
+            // Atualizar resumo
+            if (plano) {
+                document.getElementById('resumoPlano').textContent = plano.nome;
+                document.getElementById('resumoConsultas').textContent = plano.limiteConsultas;
+                document.getElementById('resumoValidade').textContent = plano.validadeDias + ' dias';
+                document.getElementById('resumoTotal').textContent = 'R$ ' + plano.preco.toFixed(2).replace('.', ',');
+            }
+        }
+
+        // Selecionar primeiro plano se nenhum selecionado
+        document.addEventListener('DOMContentLoaded', function() {
+            const selected = document.querySelector('.plan-card.selected');
+            if (!selected && planos.length > 0) {
+                selectPlan(planos[0].id);
+            }
+        });
+    </script>
+</body>
+</html>

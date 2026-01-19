@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:replace="~{layout :: layout(~{:: #content}, ~{}, ~{})}">
+<head>
+    <title>Minha Conta</title>
+</head>
+<body>
+    <div id="content">
+        <!-- Page Title -->
+        <div class="mb-4">
+            <h4 class="mb-1">Minha Conta</h4>
+            <p class="text-muted mb-0">Gerencie suas informações e plano</p>
+        </div>
+
+        <div class="row g-4">
+            <!-- Dados do Usuário -->
+            <div class="col-lg-8">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <i class="bi bi-person me-2"></i>Dados Pessoais
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label text-muted small">Nome</label>
+                                <p class="mb-0 fw-semibold" th:text="${user.nome}">Nome do Usuário</p>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-muted small">Email</label>
+                                <p class="mb-0 fw-semibold" th:text="${user.email}">email@exemplo.com</p>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-muted small">Telefone</label>
+                                <p class="mb-0 fw-semibold" th:text="${user.telefone} ?: 'Não informado'">(11) 99999-9999</p>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-muted small">Status</label>
+                                <p class="mb-0">
+                                    <span class="badge bg-success" th:if="${user.status == 'ATIVO'}">Ativo</span>
+                                    <span class="badge bg-danger" th:if="${user.status == 'INATIVO'}">Inativo</span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Alterar Senha -->
+                <div class="card">
+                    <div class="card-header">
+                        <i class="bi bi-key me-2"></i>Alterar Senha
+                    </div>
+                    <div class="card-body">
+                        <form th:action="@{/dashboard/alterar-senha}" method="post">
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <label class="form-label" for="senhaAtual">Senha Atual</label>
+                                    <input type="password" class="form-control" id="senhaAtual" name="senhaAtual" required>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label" for="novaSenha">Nova Senha</label>
+                                    <input type="password" class="form-control" id="novaSenha" name="novaSenha" required minlength="6">
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label" for="confirmaSenha">Confirmar Nova Senha</label>
+                                    <input type="password" class="form-control" id="confirmaSenha" name="confirmaSenha" required minlength="6">
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary mt-3">
+                                <i class="bi bi-check-circle me-1"></i>Alterar Senha
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Plano e Consumo -->
+            <div class="col-lg-4">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <i class="bi bi-star me-2"></i>Meu Plano
+                    </div>
+                    <div class="card-body">
+                        <div class="text-center mb-3">
+                            <h4 class="text-primary mb-0" th:text="${user.planoNome} ?: 'Sem plano'">Profissional</h4>
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between mb-1">
+                                <small class="text-muted">Consultas utilizadas</small>
+                                <small class="text-muted">
+                                    <span th:text="${user.consultasUsadas} ?: 0">0</span> /
+                                    <span th:text="${user.limiteConsultas} ?: 0">0</span>
+                                </small>
+                            </div>
+                            <div class="progress" style="height: 8px;">
+                                <div class="progress-bar" role="progressbar"
+                                     th:style="'width: ' + ${user.limiteConsultas > 0 ? (user.consultasUsadas * 100 / user.limiteConsultas) : 0} + '%'">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between py-2 border-top">
+                            <span class="text-muted">Consultas restantes:</span>
+                            <strong th:text="${stats.consultasRestantes}">0</strong>
+                        </div>
+
+                        <div class="d-flex justify-content-between py-2 border-top">
+                            <span class="text-muted">Válido até:</span>
+                            <strong th:text="${user.dataExpiracao != null} ? ${#temporals.format(user.dataExpiracao, 'dd/MM/yyyy')} : '-'">01/01/2025</strong>
+                        </div>
+
+                        <div class="d-flex justify-content-between py-2 border-top">
+                            <span class="text-muted">Dias restantes:</span>
+                            <strong th:text="${stats.diasRestantes}">0</strong>
+                        </div>
+
+                        <div class="alert alert-warning mt-3 mb-0" th:if="${stats.diasRestantes <= 7 && stats.diasRestantes > 0}">
+                            <i class="bi bi-exclamation-triangle me-1"></i>
+                            Seu plano expira em breve!
+                        </div>
+
+                        <div class="alert alert-danger mt-3 mb-0" th:if="${stats.diasRestantes <= 0}">
+                            <i class="bi bi-x-circle me-1"></i>
+                            Seu plano expirou!
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Renovar Plano -->
+                <div class="card">
+                    <div class="card-header">
+                        <i class="bi bi-arrow-repeat me-2"></i>Renovar Plano
+                    </div>
+                    <div class="card-body">
+                        <p class="text-muted small">Escolha um plano para renovar seu acesso:</p>
+                        <div class="d-grid gap-2">
+                            <a th:each="plano : ${planos}"
+                               th:href="@{/checkout(planoId=${plano.id})}"
+                               class="btn btn-outline-primary text-start">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span th:text="${plano.nome}">Plano</span>
+                                    <span th:text="'R$ ' + ${#numbers.formatDecimal(plano.preco, 1, 2)}">R$ 0,00</span>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
